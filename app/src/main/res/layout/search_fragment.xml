@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundGray">
+
+    <LinearLayout
+        android:id="@+id/search_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_keyword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_search"
+            android:text="@string/search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/result_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:layout_below="@id/search_bar_layout"/>
+
+</RelativeLayout>
