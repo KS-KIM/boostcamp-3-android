@@ -1,0 +1,83 @@
+package com.develop.kskim.boostcamp_3_android.search;
+
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.develop.kskim.boostcamp_3_android.apiInterface.MovieApiInterface;
+import com.develop.kskim.boostcamp_3_android.repository.MovieInfo;
+import com.develop.kskim.boostcamp_3_android.util.RetrofitClient;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+
+public class SearchPresenter implements SearchContract.Presenter {
+
+    private static final String TAG = SearchPresenter.class.getName();
+    private static final int MOVIE_DISPLAY_SIZE = 100;
+
+    private SearchContract.View mSearchView;
+
+    private Retrofit mRetrofit;
+    private MovieApiInterface mMovieApiInterface;
+    private Call<MovieInfo> mCallMovieList;
+    private int mPageNo;
+
+    public SearchPresenter(@NonNull SearchContract.View searchView, String baseUrl) {
+        mRetrofit = RetrofitClient.getClient(baseUrl);
+        mMovieApiInterface = mRetrofit.create(MovieApiInterface.class);
+
+        mSearchView = searchView;
+        mSearchView.setPresenter(this);
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void startSearch(String title) {
+        if (title.isEmpty()) {
+            mSearchView.showEmptyField();
+        } else {
+            getMovies(title, 1);
+        }
+    }
+
+    @Override
+    public void getMovies(String title, int startPosition) {
+        mPageNo = startPosition;
+        mCallMovieList = mMovieApiInterface.getMovieList(title, MOVIE_DISPLAY_SIZE, startPosition);
+        mCallMovieList.enqueue(mRetrofitCallback);
+    }
+
+    private Callback<MovieInfo> mRetrofitCallback = new Callback<MovieInfo>() {
+
+        @Override
+        public void onResponse(Call<MovieInfo> call, Response<MovieInfo> response) {
+            MovieInfo result = response.body();
+            if (result.getItems().size() == 0) {
+                mSearchView.showNotFindItem();
+            } else if (mPageNo <= 100) {
+                mSearchView.showMovies(new ArrayList<>(result.getItems()));
+            } else {
+                Log.d(TAG, "pageno" + mPageNo + result.getItems().get(0).getTitle());
+                mSearchView.showMoreMovies(new ArrayList<>(result.getItems()));
+            }
+        }
+
+        @Override
+        public void onFailure(Call<MovieInfo> call, Throwable t) {
+            t.printStackTrace();
+        }
+
+    };
+
+    // 검색키워드 -> 제목을 기준으로 검색
+    // 검색 키워드만 볼드 폰트 적용
+
+}
