@@ -13,13 +13,16 @@
         android:title="새로고침"
         app:showAsAction="never"/>
 
+    <!--Android 6.0 정책 변경에 따른 삭제
     <item android:id="@+id/action_addBookmark"
         android:title="북마크에 추가"
         app:showAsAction="never"/>
-
+    -->
+    <!--ShortcutManager 이용 필요
     <item android:id="@+id/action_addHome"
         android:title="홈 화면에 추가"
         app:showAsAction="never"/>
+    -->
 
     <item android:id="@+id/action_open_browser"
         android:title="삼성 인터넷에서 열기"

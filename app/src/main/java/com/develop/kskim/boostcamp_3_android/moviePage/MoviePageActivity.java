@@ -78,13 +78,8 @@ public class MoviePageActivity extends AppCompatActivity {
             case R.id.action_refresh:
                 mWvMovie.loadUrl(mCurrentUrl);
                 return true;
-            case R.id.action_addBookmark:
-                //addBookmark();
-                return true;
-            case R.id.action_addHome:
-                //addBookmarkAtHome();
-                return true;
             case R.id.action_open_browser:
+                openNewBrowser();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -92,33 +87,18 @@ public class MoviePageActivity extends AppCompatActivity {
         }
     }
 
-    /*
-    public void addBookmark() {
-        ContentValues values = new ContentValues();
-    }
-
-    public void addBookmarkAtHome() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ShortcutManager shortcutManager = getApplicationContext().getSystemService(ShortcutManager.class);
-            if (shortcutManager.isRequestPinShortcutSupported()) {
-                ShortcutInfo pinShortcutInfo = new ShortcutInfo.Builder(getApplicationContext(),
-                        mWvMovie.getTitle()).build();
-                Intent pinnedShortcutCallbackIntent = shortcutManager.createShortcutResultIntent(pinShortcutInfo);
-                PendingIntent successCallback = PendingIntent.getBroadcast(getApplicationContext(),
-                        0, pinnedShortcutCallbackIntent, 0);
-
-            }
-        }
-    }
-    */
-
-    public Intent shareTextUrl(String url) {
+    private Intent shareTextUrl(String url) {
         Intent share = ShareCompat.IntentBuilder.from(this)
                 .setType("text/plain")
                 .setChooserTitle("Share URL")
                 .setText(url)
                 .getIntent();
         return share;
+    }
+
+    public void openNewBrowser() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mWvMovie.getUrl()));
+        startActivity(intent);
     }
 
     @Override
