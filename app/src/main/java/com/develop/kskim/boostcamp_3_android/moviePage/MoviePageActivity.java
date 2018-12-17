@@ -1,7 +1,13 @@
 package com.develop.kskim.boostcamp_3_android.moviePage;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -39,7 +45,6 @@ public class MoviePageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         mCurrentUrl = intent.getStringExtra(MOVIE_URL);
 
-
         mToolBar = findViewById(R.id.my_toolbar);
         setSupportActionBar(mToolBar);
         getSupportActionBar().setTitle(mCurrentUrl);
@@ -74,8 +79,10 @@ public class MoviePageActivity extends AppCompatActivity {
                 mWvMovie.loadUrl(mCurrentUrl);
                 return true;
             case R.id.action_addBookmark:
+                //addBookmark();
                 return true;
             case R.id.action_addHome:
+                //addBookmarkAtHome();
                 return true;
             case R.id.action_open_browser:
                 return true;
@@ -84,6 +91,26 @@ public class MoviePageActivity extends AppCompatActivity {
 
         }
     }
+
+    /*
+    public void addBookmark() {
+        ContentValues values = new ContentValues();
+    }
+
+    public void addBookmarkAtHome() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ShortcutManager shortcutManager = getApplicationContext().getSystemService(ShortcutManager.class);
+            if (shortcutManager.isRequestPinShortcutSupported()) {
+                ShortcutInfo pinShortcutInfo = new ShortcutInfo.Builder(getApplicationContext(),
+                        mWvMovie.getTitle()).build();
+                Intent pinnedShortcutCallbackIntent = shortcutManager.createShortcutResultIntent(pinShortcutInfo);
+                PendingIntent successCallback = PendingIntent.getBroadcast(getApplicationContext(),
+                        0, pinnedShortcutCallbackIntent, 0);
+
+            }
+        }
+    }
+    */
 
     public Intent shareTextUrl(String url) {
         Intent share = ShareCompat.IntentBuilder.from(this)
@@ -111,7 +138,9 @@ public class MoviePageActivity extends AppCompatActivity {
     private class WebViewClientClass extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            setUrl(url);
+            if (url != null && mShareActionProvider != null) {
+                setUrl(url);
+            }
             return false;
         }
     }
