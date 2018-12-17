@@ -14,7 +14,7 @@ public interface SearchContract {
         void showNotFindItem();
         void showMoviePage(int position);
         void showMoreMovies(ArrayList<Item> items);
-        void showMovies(ArrayList<Item> items);
+        void showNewMovies(ArrayList<Item> items);
 
     }
 

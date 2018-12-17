@@ -50,9 +50,11 @@ public class SearchPresenter implements SearchContract.Presenter {
 
     @Override
     public void getMovies(String title, int startPosition) {
-        mPageNo = startPosition;
-        mCallMovieList = mMovieApiInterface.getMovieList(title, MOVIE_DISPLAY_SIZE, startPosition);
-        mCallMovieList.enqueue(mRetrofitCallback);
+        if (mPageNo != -1 || startPosition == 1) {
+            mPageNo = startPosition;
+            mCallMovieList = mMovieApiInterface.getMovieList(title, MOVIE_DISPLAY_SIZE, startPosition);
+            mCallMovieList.enqueue(mRetrofitCallback);
+        }
     }
 
     private Callback<MovieInfo> mRetrofitCallback = new Callback<MovieInfo>() {
@@ -62,11 +64,14 @@ public class SearchPresenter implements SearchContract.Presenter {
             MovieInfo result = response.body();
             if (result.getItems().size() == 0) {
                 mSearchView.showNotFindItem();
-            } else if (mPageNo <= 100) {
-                mSearchView.showMovies(new ArrayList<>(result.getItems()));
+            } else if (mPageNo <= MOVIE_DISPLAY_SIZE) {
+                mSearchView.showNewMovies(new ArrayList<>(result.getItems()));
             } else {
                 Log.d(TAG, "pageno" + mPageNo + result.getItems().get(0).getTitle());
                 mSearchView.showMoreMovies(new ArrayList<>(result.getItems()));
+            }
+            if (result.getItems().size() < MOVIE_DISPLAY_SIZE) {
+                mPageNo = -1;
             }
         }
 
