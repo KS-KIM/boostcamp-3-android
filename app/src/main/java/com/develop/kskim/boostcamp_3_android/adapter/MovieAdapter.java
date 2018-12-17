@@ -66,14 +66,10 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return mMovieInfoArrayList.get(position);
     }
 
-    public void addItem(Item item) {
-        mMovieInfoArrayList.add(item);
-    }
-
     public void addItems(ArrayList<Item> items) {
         for (Item item: items) {
             item.setTitle(item.getTitle().replace("<b>", "").replace("</b>", ""));
-            addItem(item);
+            mMovieInfoArrayList.add(item);
         }
         notifyDataSetChanged();
     }
