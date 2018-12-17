@@ -140,7 +140,7 @@ public class SearchFragment extends Fragment implements SearchContract.View, Vie
     }
 
     @Override
-    public void showMovies(ArrayList<Item> items) {
+    public void showNewMovies(ArrayList<Item> items) {
         mLayoutManager.scrollToPosition(0);
         mMovieAdapter.clearAndAddItems(items);
     }

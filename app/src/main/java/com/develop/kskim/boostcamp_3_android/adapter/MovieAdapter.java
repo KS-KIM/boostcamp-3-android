@@ -1,6 +1,7 @@
 package com.develop.kskim.boostcamp_3_android.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,8 +40,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         MovieViewHolder movieViewHolder = (MovieViewHolder) holder;
 
         Item item = mMovieInfoArrayList.get(position);
-        // movieViewHolder.mIvPoster.setImageResource(item.getImage());
-        movieViewHolder.mTvTitle.setText(item.getTitle());
+        movieViewHolder.mTvTitle.setText(Html.fromHtml(item.getTitle()));
         movieViewHolder.mRbUserRating.setRating(Float.parseFloat(item.getUserRating()) / 2);
         movieViewHolder.mTvPubData.setText(item.getPubDate());
         movieViewHolder.mTvDirector.setText(item.getDirector());
@@ -67,10 +67,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public void addItems(ArrayList<Item> items) {
-        for (Item item: items) {
-            item.setTitle(item.getTitle().replace("<b>", "").replace("</b>", ""));
-            mMovieInfoArrayList.add(item);
-        }
+        mMovieInfoArrayList.addAll(items);
         notifyDataSetChanged();
     }
 
