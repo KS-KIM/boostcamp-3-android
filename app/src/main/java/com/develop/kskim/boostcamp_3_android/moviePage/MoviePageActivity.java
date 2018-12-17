@@ -3,6 +3,7 @@ package com.develop.kskim.boostcamp_3_android.moviePage;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
@@ -12,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.webkit.WebBackForwardList;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -36,18 +38,19 @@ public class MoviePageActivity extends AppCompatActivity {
         setContentView(R.layout.movie_site_activity);
 
         Intent intent = getIntent();
-        String url = intent.getStringExtra(MOVIE_URL);
+        mCurrentUrl = intent.getStringExtra(MOVIE_URL);
+
 
         mToolBar = findViewById(R.id.my_toolbar);
         setSupportActionBar(mToolBar);
-        getSupportActionBar().setTitle(R.string.app_name);
+        getSupportActionBar().setTitle(mCurrentUrl);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mWvMovie = findViewById(R.id.wv_movie);
         mWvMovie.getSettings().setJavaScriptEnabled(true);
         mWvMovie.getSettings().setDomStorageEnabled(true);
         mWvMovie.setWebViewClient(new WebViewClientClass());
-        mWvMovie.loadUrl(url);
+        mWvMovie.loadUrl(mCurrentUrl);
     }
 
     @Override
@@ -57,7 +60,7 @@ public class MoviePageActivity extends AppCompatActivity {
 
         MenuItem item = menu.findItem(R.id.action_share);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
-        mShareActionProvider.setShareIntent(shareTextUrl());
+        mShareActionProvider.setShareIntent(shareTextUrl(mCurrentUrl));
         return true;
     }
 
@@ -69,6 +72,7 @@ public class MoviePageActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.action_refresh:
+                mWvMovie.loadUrl(mCurrentUrl);
                 return true;
             case R.id.action_addBookmark:
                 return true;
@@ -82,17 +86,21 @@ public class MoviePageActivity extends AppCompatActivity {
         }
     }
 
-    public Intent shareTextUrl() {
-        Intent share = new Intent(android.content.Intent.ACTION_SEND);
-        share.setType("text/plain");
-        share.putExtra(Intent.EXTRA_TEXT, mCurrentUrl);
+    public Intent shareTextUrl(String url) {
+        Intent share = ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setChooserTitle("Share URL")
+                .setText(url)
+                .getIntent();
         return share;
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && mWvMovie.canGoBack()) {
+            WebBackForwardList webBackForwardList = mWvMovie.copyBackForwardList();
             mWvMovie.goBack();
+            setUrl(webBackForwardList.getItemAtIndex(webBackForwardList.getCurrentIndex() - 1).getUrl());
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -104,11 +112,15 @@ public class MoviePageActivity extends AppCompatActivity {
             if (mCurrentUrl != null && url != null && url.equals(mCurrentUrl)) {
                 finish();
             }
-            view.loadUrl(url);
-            mCurrentUrl = url;
-            getSupportActionBar().setTitle(url);
-            return true;
+            setUrl(url);
+            return false;
         }
+    }
+
+    private void setUrl(String url) {
+        mCurrentUrl = url;
+        mShareActionProvider.setShareIntent(shareTextUrl(url));
+        getSupportActionBar().setTitle(url);
     }
 
 }
