@@ -12,7 +12,7 @@ import com.develop.kskim.boostcamp_3_android.search.SearchActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private final int SPLASH_DISPLAY_TIME = 300;
+    private final int SPLASH_DISPLAY_TIME = 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
