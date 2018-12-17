@@ -43,8 +43,8 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         movieViewHolder.mTvTitle.setText(Html.fromHtml(item.getTitle()));
         movieViewHolder.mRbUserRating.setRating(Float.parseFloat(item.getUserRating()) / 2);
         movieViewHolder.mTvPubData.setText(item.getPubDate());
-        movieViewHolder.mTvDirector.setText(item.getDirector());
-        movieViewHolder.mTvActor.setText(item.getActor());
+        movieViewHolder.mTvDirector.setText(Html.fromHtml(item.getDirector()));
+        movieViewHolder.mTvActor.setText(Html.fromHtml(item.getActor()));
 
         try {
             Glide.with(MyApplication.getContext())
