@@ -1,7 +1,6 @@
 package com.develop.kskim.boostcamp_3_android.search;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.develop.kskim.boostcamp_3_android.apiInterface.MovieApiInterface;
 import com.develop.kskim.boostcamp_3_android.repository.MovieInfo;
@@ -62,19 +61,23 @@ public class SearchPresenter implements SearchContract.Presenter {
         @Override
         public void onResponse(Call<MovieInfo> call, Response<MovieInfo> response) {
             MovieInfo result = response.body();
-            if (result.getItems() == null) {
-                return;
-            } else if (result.getItems().size() == 0) {
-                mSearchView.showNotFindItem();
-            } else if (mPageNo <= MOVIE_DISPLAY_SIZE) {
-                mSearchView.showNewMovies(new ArrayList<>(result.getItems()));
-            } else {
-                Log.d(TAG, "pageno" + mPageNo + result.getItems().get(0).getTitle());
-                mSearchView.showMoreMovies(new ArrayList<>(result.getItems()));
+            try {
+                if (result.getItems().size() == 0) {
+                    mSearchView.showNotFindItem();
+                } else if (mPageNo <= MOVIE_DISPLAY_SIZE) {
+                    mSearchView.showNewMovies(new ArrayList<>(result.getItems()));
+                } else {
+                    mSearchView.showMoreMovies(new ArrayList<>(result.getItems()));
+                }
+                if (result.getItems().size() < MOVIE_DISPLAY_SIZE) {
+                    mPageNo = -1;
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            if (result.getItems().size() < MOVIE_DISPLAY_SIZE) {
-                mPageNo = -1;
-            }
+
         }
 
         @Override
@@ -83,8 +86,5 @@ public class SearchPresenter implements SearchContract.Presenter {
         }
 
     };
-
-    // 검색키워드 -> 제목을 기준으로 검색
-    // 검색 키워드만 볼드 폰트 적용
 
 }
