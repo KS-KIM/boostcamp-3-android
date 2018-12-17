@@ -62,7 +62,9 @@ public class SearchPresenter implements SearchContract.Presenter {
         @Override
         public void onResponse(Call<MovieInfo> call, Response<MovieInfo> response) {
             MovieInfo result = response.body();
-            if (result.getItems().size() == 0) {
+            if (result.getItems() == null) {
+                return;
+            } else if (result.getItems().size() == 0) {
                 mSearchView.showNotFindItem();
             } else if (mPageNo <= MOVIE_DISPLAY_SIZE) {
                 mSearchView.showNewMovies(new ArrayList<>(result.getItems()));
