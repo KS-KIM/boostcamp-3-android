@@ -8,7 +8,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -99,6 +98,9 @@ public class MoviePageActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && mWvMovie.canGoBack()) {
             WebBackForwardList webBackForwardList = mWvMovie.copyBackForwardList();
+            if (webBackForwardList.getSize() == 2) {
+                finish();
+            }
             mWvMovie.goBack();
             setUrl(webBackForwardList.getItemAtIndex(webBackForwardList.getCurrentIndex() - 1).getUrl());
             return true;
@@ -109,9 +111,6 @@ public class MoviePageActivity extends AppCompatActivity {
     private class WebViewClientClass extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            if (mCurrentUrl != null && url != null && url.equals(mCurrentUrl)) {
-                finish();
-            }
             setUrl(url);
             return false;
         }
