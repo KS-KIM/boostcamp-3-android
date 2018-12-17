@@ -45,6 +45,8 @@ public class SearchFragment extends Fragment implements SearchContract.View, Vie
 
     private InputMethodManager mInputMethodManager;
 
+    private EndlessRecyclerViewScrollListener mEndlessRecyclerViewScrollListener;
+
     public static SearchFragment newInstance() {
         return new SearchFragment();
     }
@@ -72,13 +74,13 @@ public class SearchFragment extends Fragment implements SearchContract.View, Vie
             }
         }));
 
-        mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((LinearLayoutManager) mLayoutManager) {
+        mEndlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener((LinearLayoutManager) mLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                Log.d(TAG, "pageno: " + Integer.toString(page * 100 + 1));
                 mPresenter.getMovies(mEtKeyword.getText().toString(), page * 100 + 1);
             }
-        });
+        };
+        mRecyclerView.addOnScrollListener(mEndlessRecyclerViewScrollListener);
         ArrayList<Item> movieInfoArrayList = new ArrayList<>();
 
         mMovieAdapter = new MovieAdapter(movieInfoArrayList);
@@ -109,6 +111,7 @@ public class SearchFragment extends Fragment implements SearchContract.View, Vie
         switch(view.getId()) {
             case R.id.btn_search:
                 mInputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                mEndlessRecyclerViewScrollListener.resetState();
                 mPresenter.startSearch(mEtKeyword.getText().toString());
                 break;
         }

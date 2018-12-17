@@ -83,6 +83,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public static class MovieViewHolder extends RecyclerView.ViewHolder {
+
         private ImageView mIvPoster;
         private TextView mTvTitle;
         private RatingBar mRbUserRating;
@@ -92,7 +93,6 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         MovieViewHolder(View view) {
             super(view);
-
             mIvPoster = view.findViewById(R.id.iv_poster);
             mTvTitle = view.findViewById(R.id.tv_title);
             mRbUserRating = view.findViewById(R.id.rb_user_rating);
@@ -104,5 +104,6 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public ImageView getImage() {
             return mIvPoster;
         }
+
     }
 }
