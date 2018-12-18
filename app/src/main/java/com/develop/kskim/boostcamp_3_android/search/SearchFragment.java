@@ -2,6 +2,7 @@ package com.develop.kskim.boostcamp_3_android.search;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -18,14 +19,14 @@ import android.widget.Toast;
 
 import com.develop.kskim.boostcamp_3_android.R;
 import com.develop.kskim.boostcamp_3_android.adapter.MovieAdapter;
+import com.develop.kskim.boostcamp_3_android.customtab.CustomTabServiceController;
 import com.develop.kskim.boostcamp_3_android.listener.EndlessRecyclerViewScrollListener;
 import com.develop.kskim.boostcamp_3_android.listener.RecyclerItemClickListener;
-import com.develop.kskim.boostcamp_3_android.moviePage.MoviePageActivity;
 import com.develop.kskim.boostcamp_3_android.repository.Item;
 
 import java.util.ArrayList;
 
-import static com.develop.kskim.boostcamp_3_android.util.Constants.MOVIE_URL;
+import static com.develop.kskim.boostcamp_3_android.util.Constants.MOVIE_DISPLAY_SIZE;
 
 public class SearchFragment extends Fragment implements SearchContract.View, View.OnClickListener {
 
@@ -60,8 +61,30 @@ public class SearchFragment extends Fragment implements SearchContract.View, Vie
                              Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.search_fragment, container,
                 false);
+        setupRecyclerView(root);
 
-        mRecyclerView = root.findViewById(R.id.result_recycler_view);
+        mEtKeyword = root.findViewById(R.id.et_keyword);
+        mBtnSearch = root.findViewById(R.id.btn_search);
+        mBtnSearch.setOnClickListener(this);
+
+        mInputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.start();
+    }
+
+    @Override
+    public void setPresenter(@NonNull SearchContract.Presenter presenter) {
+        mPresenter = (SearchPresenter) presenter;
+    }
+
+    private void setupRecyclerView(View view) {
+        mRecyclerView = view.findViewById(R.id.result_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -77,7 +100,7 @@ public class SearchFragment extends Fragment implements SearchContract.View, Vie
         mEndlessRecyclerViewScrollListener = new EndlessRecyclerViewScrollListener((LinearLayoutManager) mLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                mPresenter.getMovies(mEtKeyword.getText().toString(), page * 100 + 1);
+                mPresenter.getMovies(mEtKeyword.getText().toString(), page * MOVIE_DISPLAY_SIZE + 1);
             }
         };
         mRecyclerView.addOnScrollListener(mEndlessRecyclerViewScrollListener);
@@ -85,30 +108,11 @@ public class SearchFragment extends Fragment implements SearchContract.View, Vie
 
         mMovieAdapter = new MovieAdapter(movieInfoArrayList);
         mRecyclerView.setAdapter(mMovieAdapter);
-
-        mEtKeyword = root.findViewById(R.id.et_keyword);
-        mBtnSearch = root.findViewById(R.id.btn_search);
-
-        mBtnSearch.setOnClickListener(this);
-
-        mInputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        return root;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.start();
-    }
-
-    @Override
-    public void setPresenter(@NonNull SearchContract.Presenter presenter) {
-        mPresenter = (SearchPresenter) presenter;
     }
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.btn_search:
                 mInputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 mEndlessRecyclerViewScrollListener.resetState();
@@ -132,9 +136,17 @@ public class SearchFragment extends Fragment implements SearchContract.View, Vie
     @Override
     public void showMoviePage(int position) {
         String url = mMovieAdapter.getItem(position).getLink();
-        Intent intent = new Intent(getContext(), MoviePageActivity.class);
-        intent.putExtra(MOVIE_URL, url);
+        Intent intent = setupCustomTabs(url);
         startActivity(intent);
+    }
+
+    private Intent setupCustomTabs(String url) {
+        CustomTabServiceController customTabServiceController = new CustomTabServiceController(getContext(), url);
+        customTabServiceController.bindCustomTabService();
+        Intent customTabIntent = customTabServiceController.createCustomTabIntent(null,
+                Color.rgb(38,182,172));
+        customTabServiceController.unbindCustomTabService();
+        return customTabIntent;
     }
 
     @Override

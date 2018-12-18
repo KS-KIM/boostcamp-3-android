@@ -14,10 +14,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static com.develop.kskim.boostcamp_3_android.util.Constants.MOVIE_DISPLAY_SIZE;
+
 public class SearchPresenter implements SearchContract.Presenter {
 
     private static final String TAG = SearchPresenter.class.getName();
-    private static final int MOVIE_DISPLAY_SIZE = 100;
 
     private SearchContract.View mSearchView;
 
